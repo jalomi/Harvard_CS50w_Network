@@ -1,5 +1,20 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
-    TODO
+    <h2>All Posts</h2>
+
+    {% for post in posts reversed %}
+    <li>
+       <b>{{ post.poster }}</b>
+        <div>
+            {{ post.content }}
+        </div>
+        <div>
+            {{ post.timestamp|date:"d M Y, G:i:s" }}
+        </div>
+        <div>
+            Likes: {{ post.like_count }}
+        </div>
+    </li>
+    {% endfor %}
 {% endblock %}
