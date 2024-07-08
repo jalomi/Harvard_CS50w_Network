@@ -11,6 +11,9 @@ from .models import *
 class NewPostForm(forms.Form):
     content = forms.CharField(label="",
                               widget=forms.Textarea(attrs={"placeholder":"New Post"}))
+    
+class NewFollowerForm(forms.Form):
+    pass
 
 
 def index(request):
@@ -97,10 +100,33 @@ def user_page(request, name):
     user = User.objects.get(username=name)
     posts = Post.objects.filter(poster=user)
 
+    followers = Follow.objects.filter(following=user)
+    following = Follow.objects.filter(follower=user)
+
+    is_following = followers.filter(follower=request.user).exists()
+
     return render(request, "network/user.html", {
         "posts": posts,
-        "name": user.username,
-        "followers": 0,
-        "following": 0,
+        "username": user.username,
+        "followers": followers.count(),
+        "following": following.count(),
         "owner": user == request.user,
+        "is_following": is_following,
     })
+
+
+def follow(request, name):
+    if request.method == "POST":
+        form = NewFollowerForm(request.POST)
+        if form.is_valid():
+            user = User.objects.get(username=name)
+            try:
+                follow = Follow.objects.get(following=user, follower=request.user)
+                follow.delete()
+            except Follow.DoesNotExist:
+                new_follow = Follow(following=user,
+                                    follower=request.user)
+                
+                new_follow.save()
+    
+    return HttpResponseRedirect(reverse("user", args=[name]))

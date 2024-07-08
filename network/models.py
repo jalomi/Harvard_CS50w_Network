@@ -11,3 +11,8 @@ class Post(models.Model):
     content = models.CharField(max_length=200)
     timestamp = models.DateTimeField(auto_now_add=True)
     like_count = models.IntegerField()
+
+
+class Follow(models.Model):
+    follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name="follower")
+    following = models.ForeignKey(User, on_delete=models.CASCADE, related_name="following")

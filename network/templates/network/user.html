@@ -1,7 +1,7 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
-    <h2>{{ name }}</h2>
+    <h2>{{ username }}</h2>
 
     <div class="user-follow">
         Followers: {{ followers }}  Following: {{ following }}
@@ -9,7 +9,14 @@
 
     <div class="user-buttons">
         {% if not owner %}
-        <button id="user-button"></button>
+        <form action="{% url "follow" username %}" method="post">
+            {% csrf_token %}
+            {% if is_following %}
+                <input type="submit" value="Unfollow">
+            {% else %}
+                <input type="submit" value="Follow">
+            {% endif %}
+        </form>
         {% endif %}
     </div>
 
