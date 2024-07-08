@@ -91,3 +91,16 @@ def new_post(request):
         return render(request, "network/new.html", {
             "form": NewPostForm(),
         })
+    
+
+def user_page(request, name):
+    user = User.objects.get(username=name)
+    posts = Post.objects.filter(poster=user)
+
+    return render(request, "network/user.html", {
+        "posts": posts,
+        "name": user.username,
+        "followers": 0,
+        "following": 0,
+        "owner": user == request.user,
+    })

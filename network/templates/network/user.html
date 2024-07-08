@@ -1,7 +1,19 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
-    <h2>All Posts</h2>
+    <h2>{{ name }}</h2>
+
+    <div class="user-follow">
+        Followers: {{ followers }}  Following: {{ following }}
+    </div>
+
+    <div class="user-buttons">
+        {% if not owner %}
+        <button id="user-button"></button>
+        {% endif %}
+    </div>
+
+    <hr>
 
     <div class="posts">
         {% for post in posts reversed %}
@@ -21,4 +33,5 @@
         </li>
         {% endfor %}
     </div>
+    
 {% endblock %}
