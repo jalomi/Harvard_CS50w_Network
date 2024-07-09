@@ -8,7 +8,7 @@
     </div>
 
     <div class="user-buttons">
-        {% if not owner %}
+        {% if is_auth and not owner %}
         <form action="{% url "follow" username %}" method="post">
             {% csrf_token %}
             {% if is_following %}

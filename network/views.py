@@ -103,14 +103,21 @@ def user_page(request, name):
     followers = Follow.objects.filter(following=user)
     following = Follow.objects.filter(follower=user)
 
-    is_following = followers.filter(follower=request.user).exists()
+    is_following = False
+    owner = False
+    is_auth = False
+    if request.user.is_authenticated:
+        is_following = followers.filter(follower=request.user).exists()
+        owner = user == request.user
+        is_auth = True
 
     return render(request, "network/user.html", {
         "posts": posts,
         "username": user.username,
         "followers": followers.count(),
         "following": following.count(),
-        "owner": user == request.user,
+        "is_auth": is_auth,
+        "owner": owner,
         "is_following": is_following,
     })
 
