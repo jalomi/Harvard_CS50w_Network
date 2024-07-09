@@ -137,3 +137,19 @@ def follow(request, name):
                 new_follow.save()
     
     return HttpResponseRedirect(reverse("user", args=[name]))
+
+
+def following(request):
+    follows = Follow.objects.filter(follower=request.user)
+
+    posts = Post.objects.none()
+
+    for f in follows:
+        p = Post.objects.filter(poster=f.following)
+        posts = posts | p
+
+    posts = posts.order_by("timestamp")
+
+    return render(request, "network/following.html", {
+        "posts": posts,
+    })

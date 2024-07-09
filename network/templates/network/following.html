@@ -1,0 +1,7 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+    <h2>Following</h2>
+
+    {% include "network/postlist.html" with posts=posts %}
+{% endblock %}
