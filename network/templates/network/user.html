@@ -22,23 +22,5 @@
 
     <hr>
 
-    <div class="posts">
-        {% for post in posts reversed %}
-        <li>
-            <div class="post-username">
-                <a href="{% url "user" post.poster %}"><b>{{ post.poster }}</b></a>
-            </div>
-            <div class="post-content">
-                {{ post.content }}
-            </div>
-            <div class="post-timestamp">
-                {{ post.timestamp|date:"d M Y, G:i:s" }}
-            </div>
-            <div class="post-likes">
-                Likes: {{ post.like_count }}
-            </div>
-        </li>
-        {% endfor %}
-    </div>
-    
+    {% include "network/postlist.html" with posts=posts %}
 {% endblock %}
