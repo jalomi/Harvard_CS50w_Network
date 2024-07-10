@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
+from django.core.paginator import Paginator
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -17,10 +18,11 @@ class NewFollowerForm(forms.Form):
 
 
 def index(request):
-    posts = Post.objects.all()
+    posts = Post.objects.all().order_by("-timestamp")
+    page = Paginator(posts, 10).get_page(request.GET.get('page'))
 
     return render(request, "network/index.html", {
-        "posts": posts,
+        "page_obj": page,
     })
 
 
@@ -98,7 +100,8 @@ def new_post(request):
 
 def user_page(request, name):
     user = User.objects.get(username=name)
-    posts = Post.objects.filter(poster=user)
+    posts = Post.objects.filter(poster=user).order_by("-timestamp")
+    page = Paginator(posts, 10).get_page(request.GET.get('page'))
 
     followers = Follow.objects.filter(following=user)
     following = Follow.objects.filter(follower=user)
@@ -112,7 +115,7 @@ def user_page(request, name):
         is_auth = True
 
     return render(request, "network/user.html", {
-        "posts": posts,
+        "page_obj": page,
         "username": user.username,
         "followers": followers.count(),
         "following": following.count(),
@@ -148,8 +151,9 @@ def following(request):
         p = Post.objects.filter(poster=f.following)
         posts = posts | p
 
-    posts = posts.order_by("timestamp")
+    posts = posts.order_by("-timestamp")
+    page = Paginator(posts, 10).get_page(request.GET.get('page'))
 
     return render(request, "network/following.html", {
-        "posts": posts,
+        "page_obj": page,
     })
