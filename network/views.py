@@ -1,10 +1,14 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db import IntegrityError
+from django.http import JsonResponse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django import forms
+
+from json import loads
 
 from .models import *
 
@@ -157,3 +161,23 @@ def following(request):
     return render(request, "network/following.html", {
         "page_obj": page,
     })
+
+
+@login_required
+def edit_post(request, id):
+    try:
+        post = Post.objects.get(pk=id)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post not found."}, status=404)
+
+    if request.user != post.poster:
+        return JsonResponse({"error": "Post can only be edited by the user who posted it."}, status=403)
+    
+    if request.method == "PUT":
+        data = loads(request.body)
+        if data.get("content") is not None:
+            post.content = data["content"]
+            post.save()
+        return HttpResponse(status=204)
+    else:
+        return JsonResponse({"error": "PUT request required."}, status=400)

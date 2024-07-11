@@ -1,6 +1,6 @@
 <div class="posts">
     {% for post in page_obj.object_list %}
-    <li>
+    <li data-postid="{{ post.id }}">
         <div class="post-username">
             <a href="{% url "user" post.poster %}"><b>{{ post.poster }}</b></a>
         </div>
@@ -13,10 +13,14 @@
         <div class="post-likes">
             Likes: {{ post.like_count }}
         </div>
+        {% if user.is_authenticated %}
+            {% if user == post.poster %}
+            <button id="edit-button">Edit</button>
+            {% endif %}
+        {% endif %}
     </li>
     {% endfor %}
 </div>
-
 <nav aria-label="pagenav">
     <ul class="pagination justify-content-center">
         {% if page_obj.has_previous %}
@@ -54,3 +58,11 @@
         {% endif %}
     </ul>
 </nav>
+
+{% load static %}
+{% block script %}
+    <script>
+        var CSRF_TOKEN = '{{ csrf_token }}';
+    </script>
+    <script src="{% static 'network/edit.js' %}"></script>
+{% endblock %}
